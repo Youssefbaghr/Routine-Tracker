@@ -55,7 +55,7 @@ const Register = () => {
         }
     };
 
-    return (
+      return (
         <div className='min-h-screen flex items-center justify-center bg-gray-100'>
             <div className='bg-white p-8 rounded-lg shadow-md w-full sm:w-96 max-w-md'>
                 <h1 className='text-3xl font-bold text-center mb-8'>
@@ -72,7 +72,7 @@ const Register = () => {
                         <input
                             type='text'
                             placeholder='Enter your name'
-                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500'
+                           className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
@@ -81,7 +81,7 @@ const Register = () => {
                         <input
                             type='email'
                             placeholder='Enter your email'
-                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500'
+className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
@@ -89,13 +89,12 @@ const Register = () => {
                     <input
                         type='password'
                         placeholder='Enter your password'
-                        className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 col-span-2'
+className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <input
-                        type='date'
-                        className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 col-span-2'
+                        type='date'className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                         value={age}
                         onChange={(e) => setAge(e.target.value)}
                     />
