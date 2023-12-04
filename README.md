@@ -29,7 +29,7 @@ Open your browser and visit [https://routine-tracker-topaz.vercel.app/](https://
 
 2. **Install Dependencies:**
 
-    \`\`\`bash
+    ```bash
     cd routine-tracker
 
     cd server
@@ -39,7 +39,7 @@ Open your browser and visit [https://routine-tracker-topaz.vercel.app/](https://
     cd client
 
     yarn or npm install
-    \`\`\`
+    ```
 
 3. **Set Up Environment Variables:**
 
@@ -48,12 +48,12 @@ Open your browser and visit [https://routine-tracker-topaz.vercel.app/](https://
 
 4. **Run Development Server:**
 
-    \`\`\`bash
+    ```bash
     npm run dev
 
     or
     yarn dev
-    \`\`\`
+    ```
 
 5. **Access the Application:**
 
