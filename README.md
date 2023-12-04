@@ -1,7 +1,5 @@
 # Routine Tracker Web Application
 
-![Routine Tracker]
-
 Efficiently plan and manage workouts and routines with this web application. Utilizing Next.js for the client-side, Node.js (Express) for the server-side, and MongoDB for database storage, this app provides a seamless user experience.
 
 Open your browser and visit [https://routine-tracker-topaz.vercel.app/](https://routine-tracker-topaz.vercel.app/) to view the live demo of the app.
