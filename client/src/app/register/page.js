@@ -40,7 +40,7 @@ const Register = () => {
 
             // Register user by sending data to the backend
             const registrationResponse = await axios.post(
-                '/api/register',
+                'https://routinetrackerserver.onrender.com/api/register',
                 userData
             );
 
@@ -55,7 +55,7 @@ const Register = () => {
         }
     };
 
-      return (
+   return (
         <div className='min-h-screen flex items-center justify-center bg-gray-100'>
             <div className='bg-white p-8 rounded-lg shadow-md w-full sm:w-96 max-w-md'>
                 <h1 className='text-3xl font-bold text-center mb-8'>
@@ -64,49 +64,74 @@ const Register = () => {
                 {error && (
                     <p className='text-red-500 text-center mb-4'>{error}</p>
                 )}
-                <form
-                    className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4'
-                    onSubmit={handleRegister}
-                >
-                    <div className='flex flex-col'>
+                <form onSubmit={handleRegister}>
+                    <div className='mb-4'>
+                        <label htmlFor='name' className='block text-sm font-medium text-gray-700'>
+                            Name
+                        </label>
                         <input
                             type='text'
+                            id='name'
                             placeholder='Enter your name'
-                           className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
                     </div>
-                    <div className='flex flex-col'>
+                    <div className='mb-4'>
+                        <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
+                            Email
+                        </label>
                         <input
                             type='email'
+                            id='email'
                             placeholder='Enter your email'
-                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
-                    <input
-                        type='password'
-                        placeholder='Enter your password'
-                        className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <input
-                        type='date'className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                    />
-                    <select
-                        className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 col-span-2'
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value)}
-                    >
-                        <option value=''>Select Gender</option>
-                        <option value='male'>Male</option>
-                        <option value='female'>Female</option>
-                    </select>
+                    {/* Other input fields */}
+                    <div className='mb-4'>
+                        <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
+                            Password
+                        </label>
+                        <input
+                            type='password'
+                            id='password'
+                            placeholder='Enter your password'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className='mb-4'>
+                        <label htmlFor='age' className='block text-sm font-medium text-gray-700'>
+                            Age
+                        </label>
+                        <input
+                            type='date'
+                            id='age'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
+                            value={age}
+                            onChange={(e) => setAge(e.target.value)}
+                        />
+                    </div>
+                    <div className='mb-4'>
+                        <label htmlFor='gender' className='block text-sm font-medium text-gray-700'>
+                            Gender
+                        </label>
+                        <select
+                            id='gender'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                        >
+                            <option value=''>Select Gender</option>
+                            <option value='male'>Male</option>
+                            <option value='female'>Female</option>
+                        </select>
+                    </div>
                     <button
                         type='submit'
                         disabled={isLoading}
@@ -114,14 +139,11 @@ const Register = () => {
                             isLoading
                                 ? 'bg-gray-400 cursor-not-allowed'
                                 : 'bg-blue-500 hover:bg-blue-600'
-                        } text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out col-span-2`}
-                        style={{
-                            transition: 'transform 0.2s ease-in-out',
-                        }}
+                        } text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out w-full`}
                     >
                         {isLoading ? 'Loading...' : 'Register'}
                     </button>
-                    <div className='col-span-2 text-center'>
+                    <div className='text-center mt-4'>
                         <p className='text-gray-700'>
                             Have an account?{' '}
                             <a
