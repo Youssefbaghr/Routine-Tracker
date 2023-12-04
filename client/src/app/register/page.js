@@ -64,7 +64,7 @@ const Register = () => {
                 {error && (
                     <p className='text-red-500 text-center mb-4'>{error}</p>
                 )}
-<form
+                <form
                     className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4'
                     onSubmit={handleRegister}
                 >
@@ -81,7 +81,7 @@ const Register = () => {
                         <input
                             type='email'
                             placeholder='Enter your email'
-className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
+                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
@@ -89,7 +89,7 @@ className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 
                     <input
                         type='password'
                         placeholder='Enter your password'
-className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
+                        className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 sm:col-span-2'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
