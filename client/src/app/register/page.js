@@ -64,7 +64,7 @@ const Register = () => {
                 {error && (
                     <p className='text-red-500 text-center mb-4'>{error}</p>
                 )}
-                <form
+<form
                     className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4'
                     onSubmit={handleRegister}
                 >
