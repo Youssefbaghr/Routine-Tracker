@@ -5,13 +5,26 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../lib/features/auth-slice';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import ErrorHandler from '@/Components/ErrorHandler';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const clearError = () => {
+        setErrorMessage('');
+    };
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     const dispatch = useDispatch();
 
@@ -27,7 +40,7 @@ const Login = () => {
         e.preventDefault(); // Prevent default form submission
 
         setLoading(true);
-        setError('');
+        setErrorMessage('');
 
         try {
             const response = await axios.post('/api/login', {
@@ -40,7 +53,25 @@ const Login = () => {
 
             router.push('/', { scroll: false });
         } catch (error) {
-            setError('Invalid credentials. Please try again.');
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                const { status, data } = error.response;
+                if (status === 400) {
+                    setErrorMessage(data.error);
+                } else if (status === 401) {
+                    setErrorMessage(data.error);
+                } else {
+                    setErrorMessage('An error occurred. Please try again.');
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                setErrorMessage(
+                    'No response received from the server. Please try again.'
+                );
+            } else {
+                // Something happened in setting up the request
+                setErrorMessage('An error occurred. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -67,23 +98,36 @@ const Login = () => {
                             className='w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500'
                         />
                     </div>
-                    <div className='transition-all duration-300 ease-in-out transform hover:scale-105'>
+
+                    <div className='md:col-span-2 relative'>
                         <label
                             htmlFor='password'
                             className='block text-gray-700 font-semibold mb-2'
                         >
                             Password
                         </label>
-
-                        <input
-                            type='password'
-                            id='password'
-                            placeholder='Enter your password'
-                            value={password}
-                            onChange={handlePasswordChange}
-                            className='w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500'
-                        />
+                        <div className='flex items-center py-2 px-3'>
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder='Enter your password'
+                                className='w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500'
+                                value={password}
+                                onChange={handlePasswordChange}
+                            />
+                            <button
+                                type='button'
+                                className='flex items-center justify-center h-full px-3 focus:outline-none'
+                                onClick={handleTogglePassword}
+                            >
+                                {showPassword ? (
+                                    <VisibilityOff className='h-5 w-5 text-gray-500' />
+                                ) : (
+                                    <Visibility className='h-5 w-5 text-gray-500' />
+                                )}
+                            </button>
+                        </div>
                     </div>
+
                     <button
                         type='submit'
                         className='w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out'
@@ -92,10 +136,12 @@ const Login = () => {
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
-                {error && (
-                    <div className='mt-4 text-center'>
-                        <p className='text-red-500'>{error}</p>
-                    </div>
+
+                {errorMessage && (
+                    <ErrorHandler
+                        errorMessage={errorMessage}
+                        clearError={clearError}
+                    />
                 )}
 
                 <div className='mt-4 text-center'>

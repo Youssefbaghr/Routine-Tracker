@@ -8,16 +8,20 @@ import { useSelector } from 'react-redux';
 export default function EditRoutine({ params }) {
     const { id } = params;
     const [routineTitle, setRoutineTitle] = useState('');
+    const [tasks, setTasks] = useState([]);
     const [routineDescription, setRoutineDescription] = useState('');
     const token = useSelector((state) => state.token);
 
     useEffect(() => {
         const fetchRoutine = async () => {
             try {
-                const response = await axios.get(`/routines/${id}`);
-                const { title, description } = response.data;
+                const response = await axios.get(`/routines/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const { title, description, tasks } = response.data.routine;
                 setRoutineTitle(title);
                 setRoutineDescription(description);
+                setTasks(tasks);
             } catch (error) {
                 console.error('Error fetching routine:', error.response.data);
             }
@@ -41,6 +45,7 @@ export default function EditRoutine({ params }) {
             const updatedRoutine = {
                 title: routineTitle,
                 description: routineDescription,
+                tasks,
             };
 
             const response = await axios.put(
@@ -55,6 +60,22 @@ export default function EditRoutine({ params }) {
         } catch (error) {
             console.error('Error updating routine:', error.response.data);
         }
+    };
+
+    const handleTaskChange = (index, e) => {
+        const newTasks = [...tasks];
+        newTasks[index] = e.target.value;
+        setTasks(newTasks);
+    };
+
+    const handleAddTask = () => {
+        setTasks([...tasks, '']);
+    };
+
+    const handleRemoveTask = (index) => {
+        const newTasks = [...tasks];
+        newTasks.splice(index, 1);
+        setTasks(newTasks);
     };
 
     return (
@@ -100,10 +121,41 @@ export default function EditRoutine({ params }) {
                         placeholder='Enter routine description'
                     ></textarea>
                 </div>
+                <div className='mb-6'>
+                    <label className='block text-gray-700 font-semibold mb-2'>
+                        Tasks
+                    </label>
+                    {tasks.map((task, index) => (
+                        <div key={index} className='flex mb-2'>
+                            <input
+                                type='text'
+                                className='w-full rounded-md border-gray-300 focus:outline-none focus:border-blue-500 px-4 py-2 mr-2'
+                                value={task}
+                                onChange={(e) => handleTaskChange(index, e)}
+                                placeholder={`Enter task ${index + 1}`}
+                            />
+                            <button
+                                type='button'
+                                className='py-2 px-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition duration-300'
+                                onClick={() => handleRemoveTask(index)}
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type='button'
+                        className='py-2 px-4 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-300'
+                        onClick={handleAddTask}
+                    >
+                        Add Task
+                    </button>
+                </div>
                 <div className='text-center'>
                     <button
                         className='py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-300'
                         onClick={handleSubmit}
+                        disabled={!routineTitle}
                     >
                         Save Changes
                     </button>

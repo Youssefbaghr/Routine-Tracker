@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
-const mongodbUrl =
-    'YOUR_MONGO_DB_URL';
+const mongodbUrl ='YOUR_MONGO_DB_URL';
 
 const connectToMongoDB = async () => {
     try {

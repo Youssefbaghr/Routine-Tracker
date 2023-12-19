@@ -1,28 +1,84 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { Snackbar } from '@mui/material';
+import axios from 'axios';
+import { Alert, AlertTitle } from '@mui/material';
 
 const Home = () => {
     const user = useSelector((state) => state.user);
     const [subscribeEmail, setSubscribeEmail] = useState('');
     const [subscribeAlertOpen, setSubscribeAlertOpen] = useState(false);
+    const [subscribeAlertProps, setSubscribeAlertProps] = useState({
+        message: '',
+        severity: 'success',
+    });
 
-    const handleSubscribe = (event) => {
-        event.preventDefault();
-
-        setSubscribeAlertOpen(true); // Show alert after clicking subscribe
-    };
-
-    const handleCloseSubscribeAlert = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+    const handleCloseAlert = () => {
         setSubscribeAlertOpen(false);
     };
+
+    const handleSubscribe = async (event) => {
+        event.preventDefault();
+        setSubscribeAlertProps(false);
+
+        // Perform a check for a valid email format (you can use a regex or any validation library)
+        const isValidEmail = /\S+@\S+\.\S+/.test(subscribeEmail);
+        if (!isValidEmail) {
+            setSubscribeAlertProps({
+                message: 'Please enter a valid email address',
+                severity: 'error',
+            });
+            setSubscribeAlertOpen(true);
+            return;
+        } else {
+            // Simulating an API call to a backend
+            try {
+                const response = await axios.post('/api/subscribe', {
+                    email: subscribeEmail,
+                });
+
+                setSubscribeEmail('');
+                setSubscribeAlertProps({
+                    message: response.data.message || 'Subscription successful',
+                    severity: 'success',
+                });
+                setSubscribeAlertOpen(true);
+                setTimeout(() => {
+                    setSubscribeAlertOpen(false);
+                }, 3000);
+            } catch (error) {
+                if (error.response) {
+                    setSubscribeAlertProps({
+                        message:
+                            error.response.data.error || 'Subscription failed',
+                        severity: 'error',
+                    });
+                    setSubscribeAlertOpen(true);
+                } else {
+                    setSubscribeAlertProps({
+                        message: 'Subscription failed',
+                        severity: 'error',
+                    });
+                    setSubscribeAlertOpen(true);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        let timeout;
+        if (subscribeAlertOpen) {
+            timeout = setTimeout(() => {
+                setSubscribeAlertOpen(false);
+            }, 3000);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [subscribeAlertOpen]);
 
     const cardVariants = {
         hidden: { opacity: 0, scale: 0 },
@@ -146,13 +202,18 @@ const Home = () => {
                         Subscribe
                     </button>
                 </motion.form>
-                <Snackbar
-                    open={subscribeAlertOpen}
-                    autoHideDuration={6000}
-                    onClose={handleCloseSubscribeAlert}
-                    message='You have subscribed!'
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                />
+                {subscribeAlertOpen === true && (
+                    <Alert
+                        open={subscribeAlertOpen}
+                        onClose={handleCloseAlert}
+                        severity={subscribeAlertProps.severity}
+                    >
+                        <AlertTitle>
+                            {subscribeAlertProps.severity?.toUpperCase()}
+                        </AlertTitle>
+                        {subscribeAlertProps.message}
+                    </Alert>
+                )}
             </section>
         </div>
     );

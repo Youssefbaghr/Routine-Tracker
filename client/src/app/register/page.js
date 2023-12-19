@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import ErrorHandler from '@/Components/ErrorHandler';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Register = () => {
     // State variables
@@ -11,19 +13,30 @@ const Register = () => {
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+
     const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const clearError = () => {
+        setErrorMessage('');
+    };
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     // Handle form submission
     const handleRegister = async (e) => {
         e.preventDefault();
 
         // Clear previous error messages
-        setError('');
+        setErrorMessage('');
 
         // Check if any required field is empty
         if (!name || !email || !password || !age || !gender) {
-            setError('Please fill in all the fields');
+            setErrorMessage('Please fill in all the fields');
             return;
         }
 
@@ -40,89 +53,103 @@ const Register = () => {
 
             // Register user by sending data to the backend
             const registrationResponse = await axios.post(
-                'https://routinetrackerserver.onrender.com/api/register',
+                '/api/register',
                 userData
             );
 
             // Redirect to login page after successful registration
             router.push('/login', { scroll: false });
         } catch (error) {
-            // Handle any errors during image upload or registration
-            console.error('Registration Error:', error);
-            setError('Failed to register. Please try again.');
-        } finally {
             setIsLoading(false);
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                const { status, data } = error.response;
+                if (status === 400 || status === 401) {
+                    setErrorMessage(
+                        data.error || data.message || 'Registration failed'
+                    );
+                } else {
+                    setErrorMessage('An error occurred. Please try again.');
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                setErrorMessage(
+                    'No response received from the server. Please try again.'
+                );
+            } else {
+                // Something happened in setting up the request
+                setErrorMessage('An error occurred. Please try again.');
+            }
         }
     };
 
-   return (
+    return (
         <div className='min-h-screen flex items-center justify-center bg-gray-100'>
             <div className='bg-white p-8 rounded-lg shadow-md w-full sm:w-96 max-w-md'>
                 <h1 className='text-3xl font-bold text-center mb-8'>
                     Register
                 </h1>
-                {error && (
-                    <p className='text-red-500 text-center mb-4'>{error}</p>
+                {errorMessage && (
+                    <ErrorHandler
+                        errorMessage={errorMessage}
+                        clearError={clearError}
+                    />
                 )}
-                <form onSubmit={handleRegister}>
-                    <div className='mb-4'>
-                        <label htmlFor='name' className='block text-sm font-medium text-gray-700'>
-                            Name
-                        </label>
+                <form
+                    className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-4'
+                    onSubmit={handleRegister}
+                >
+                    <div className='md:col-span-1'>
                         <input
                             type='text'
-                            id='name'
                             placeholder='Enter your name'
                             className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
                     </div>
-                    <div className='mb-4'>
-                        <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
-                            Email
-                        </label>
+                    <div className='md:col-span-1'>
                         <input
                             type='email'
-                            id='email'
                             placeholder='Enter your email'
                             className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
-                    {/* Other input fields */}
-                    <div className='mb-4'>
-                        <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
-                            Password
-                        </label>
-                        <input
-                            type='password'
-                            id='password'
-                            placeholder='Enter your password'
-                            className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+
+                    <div className='md:col-span-2 relative'>
+                        <div className='flex items-center'>
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder='Enter your password'
+                                className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type='button'
+                                className='flex items-center justify-center h-full px-3 focus:outline-none'
+                                onClick={handleTogglePassword}
+                            >
+                                {showPassword ? (
+                                    <VisibilityOff className='h-5 w-5 text-gray-500' />
+                                ) : (
+                                    <Visibility className='h-5 w-5 text-gray-500' />
+                                )}
+                            </button>
+                        </div>
                     </div>
-                    <div className='mb-4'>
-                        <label htmlFor='age' className='block text-sm font-medium text-gray-700'>
-                            Age
-                        </label>
+                    <div className='md:col-span-2'>
                         <input
                             type='date'
-                            id='age'
                             className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={age}
                             onChange={(e) => setAge(e.target.value)}
                         />
                     </div>
-                    <div className='mb-4'>
-                        <label htmlFor='gender' className='block text-sm font-medium text-gray-700'>
-                            Gender
-                        </label>
+                    <div className='md:col-span-2'>
                         <select
-                            id='gender'
                             className='border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 w-full'
                             value={gender}
                             onChange={(e) => setGender(e.target.value)}
@@ -132,18 +159,23 @@ const Register = () => {
                             <option value='female'>Female</option>
                         </select>
                     </div>
-                    <button
-                        type='submit'
-                        disabled={isLoading}
-                        className={`${
-                            isLoading
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-blue-500 hover:bg-blue-600'
-                        } text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out w-full`}
-                    >
-                        {isLoading ? 'Loading...' : 'Register'}
-                    </button>
-                    <div className='text-center mt-4'>
+                    <div className='md:col-span-2'>
+                        <button
+                            type='submit'
+                            disabled={isLoading}
+                            className={`${
+                                isLoading
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-blue-500 hover:bg-blue-600'
+                            } text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out w-full`}
+                            style={{
+                                transition: 'transform 0.2s ease-in-out',
+                            }}
+                        >
+                            {isLoading ? 'Loading...' : 'Register'}
+                        </button>
+                    </div>
+                    <div className='md:col-span-2 text-center'>
                         <p className='text-gray-700'>
                             Have an account?{' '}
                             <a

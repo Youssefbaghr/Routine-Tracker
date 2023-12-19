@@ -1,22 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { deleteUser, logout } from '../../../lib/features/auth-slice.js';
 import axios from 'axios';
+import Collapse from '@mui/material/Collapse';
+import { Alert, Button } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Profile = () => {
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const [showAlert, setShowAlert] = useState(false);
 
     const token = useSelector((state) => state.token);
 
-    const [showOptions, setShowOptions] = useState(false);
-
-    function calculateAgeFromDate(dateString) {
+    const calculateAgeFromDate = (dateString) => {
         const birthDate = new Date(dateString);
         const currentDate = new Date();
 
@@ -28,15 +30,10 @@ const Profile = () => {
         const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
         return age;
-    }
+    };
 
-    // Example usage:
     const dateString = user.age;
     const age = calculateAgeFromDate(dateString);
-
-    const toggleOptions = () => {
-        setShowOptions(!showOptions);
-    };
 
     const handleLogout = () => {
         dispatch(logout());
@@ -44,6 +41,10 @@ const Profile = () => {
     };
 
     const handleDeleteAccount = async () => {
+        setShowAlert(true); // Set showAlert to true when the delete button is clicked
+    };
+
+    const confirmDeleteAccount = async () => {
         try {
             // Make a DELETE request to the API endpoint passing the user ID
             await axios.delete(`/api/users/delete/${user._id}`, {
@@ -85,43 +86,66 @@ const Profile = () => {
                         <span className='font-semibold'>Age:</span> {age}
                     </p>
                 </div>
-                <div className='flex justify-center'>
+                <div className='mt-4'>
                     <button
-                        onClick={toggleOptions}
-                        className='py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded'
+                        onClick={handleLogout}
+                        className='block w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded my-2 transition duration-300 ease-in-out'
                     >
-                        Show Options
+                        Logout
                     </button>
-                </div>
-                <CSSTransition
-                    in={showOptions}
-                    timeout={300}
-                    classNames='options'
-                    unmountOnExit
-                >
-                    <div className='mt-4'>
-                        <button
-                            onClick={handleLogout}
-                            className='block w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded my-2 transition duration-300 ease-in-out'
+                    <button
+                        onClick={handleDeleteAccount}
+                        className='block w-full py-2 px-4 mb-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded transition duration-300 ease-in-out'
+                    >
+                        Delete Account
+                    </button>
+
+                    <Collapse in={showAlert} className='my-2'>
+                        <Alert
+                            severity='warning'
+                            action={
+                                <IconButton
+                                    aria-label='close'
+                                    color='inherit'
+                                    size='small'
+                                    onClick={() => {
+                                        setShowAlert(false);
+                                    }}
+                                >
+                                    <CloseIcon fontSize='inherit' />
+                                </IconButton>
+                            }
+                            sx={{ mb: 2 }}
                         >
-                            Logout
-                        </button>
-                        <button
-                            onClick={handleDeleteAccount}
-                            className='block w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded transition duration-300 ease-in-out'
+                            <div>
+                                <p>
+                                    Are you sure you want to delete your
+                                    account?
+                                </p>
+                                <div className='mt-4 flex justify-around'>
+                                    <Button onClick={() => setShowAlert(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={() => confirmDeleteAccount()}
+                                        variant='contained'
+                                        color='error'
+                                    >
+                                        Delete
+                                    </Button>
+                                </div>
+                            </div>
+                        </Alert>
+                    </Collapse>
+                    <div className='mt-4 text-center'>
+                        <a
+                            href='/dashboard/settings'
+                            className='text-blue-500 hover:underline'
                         >
-                            Delete Account
-                        </button>
-                        <div className='mt-4 text-center'>
-                            <a
-                                href='/dashboard/settings'
-                                className='text-blue-500 hover:underline'
-                            >
-                                Go to Settings
-                            </a>
-                        </div>
+                            Go to Settings
+                        </a>
                     </div>
-                </CSSTransition>
+                </div>
             </div>
         </div>
     );

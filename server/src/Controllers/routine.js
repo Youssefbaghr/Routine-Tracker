@@ -40,20 +40,6 @@ const editRoutineById = async (req, res) => {
     }
 };
 
-const getAllRoutines = async (req, res) => {
-    try {
-        const userId = req.user;
-
-        const routines = await Routines.find({ userId: userId });
-        res.status(200).json({ routines });
-    } catch (err) {
-        res.status(500).json({
-            error: 'Internal server error',
-            message: err.message,
-        });
-    }
-};
-
 const deleteRoutineById = async (req, res) => {
     try {
         const deletedRoutine = await Routines.findOneAndDelete({
@@ -76,12 +62,23 @@ const deleteRoutineById = async (req, res) => {
     }
 };
 
+const getAllRoutines = async (req, res) => {
+    try {
+        const userId = req.user;
+
+        const routines = await Routines.find({ userId: userId });
+        res.status(200).json({ routines });
+    } catch (err) {
+        res.status(500).json({
+            error: 'Internal server error',
+            message: err.message,
+        });
+    }
+};
+
 const getRoutineById = async (req, res) => {
     try {
-        const routine = await Routines.findOne({
-            _id: req.params.id,
-            userId: req.userId,
-        });
+        const routine = await Routines.findById(req.params.id);
 
         if (!routine) {
             return res
